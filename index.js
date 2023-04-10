@@ -216,7 +216,7 @@ class Dalai {
       return
     }
 
-    let [Core, Model] = req.models[0].split(".")
+    let [Core, Model] = (req.model || req.models[0]).split(".")
     Model = Model.toUpperCase()
 
     console.log( { Core, Model } )
