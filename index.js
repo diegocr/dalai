@@ -216,7 +216,7 @@ class Dalai {
       return
     }
 
-    let [Core, Model] = req.model.split(".")
+    let [Core, Model] = req.models[0].split(".")
     Model = Model.toUpperCase()
 
     console.log( { Core, Model } )
@@ -337,16 +337,16 @@ class Dalai {
     let models_path = path.resolve(engine.home, "models")
     let temp_path = path.resolve(this.home, "tmp")
     let temp_models_path = path.resolve(temp_path, "models")
+    await fs.promises.mkdir(models_path, { recursive: true }).catch((e) => { })
     await fs.promises.mkdir(temp_path, { recursive: true }).catch((e) => { console.log("1", e) })
     // 1. move the models folder to ../tmp
     await fs.promises.rename(models_path, temp_models_path).catch((e) => { console.log("2", e) })
-    // 2. wipe out the folder
-    await fs.promises.rm(engine.home, { recursive: true }).catch((e) => { console.log("3", e) })
-    // 3. install engine
+    // 2. install engine
     await this.add(core)
+    // 3. wipe out the folder
+    await fs.promises.rm(models_path, { recursive: true }).catch((e) => { console.log("3", e) })
     // 4. move back the files inside /tmp
     await fs.promises.rename(temp_models_path, models_path).catch((e) => { console.log("4", e) })
-
     // next add the models
     let res = await this.cores[core].add(...models)
     return res
